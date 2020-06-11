@@ -14,28 +14,31 @@
 			
 			$password = $db -> quote(htmlspecialchars($_POST['password']));
 			$username = $db -> quote(htmlspecialchars($_POST['username']));
+			if(valid_captcha()) {
+				if(valid_password(htmlspecialchars($_POST['password']))) {
+					$result = $db -> select("SELECT `user_id`,`username`,`password`,`username` FROM `users` WHERE `username`=".$username."");
+					if(count($result) != 0) {
+						if (password_verify($password, $result[0]['password'])) {
+							$key = md5(uniqid(rand(), true));
+							$db -> query("UPDATE `users` SET `tempkey`='".$key."' WHERE `username`=".$username."");
 
-			if(valid_password(htmlspecialchars($_POST['password']))) {
-				$result = $db -> select("SELECT `user_id`,`username`,`password`,`username` FROM `users` WHERE `username`=".$username."");
-				if(count($result) != 0) {
-					if (password_verify($password, $result[0]['password'])) {
-						$key = md5(uniqid(rand(), true));
-						$db -> query("UPDATE `users` SET `tempkey`='".$key."' WHERE `username`=".$username."");
+							$_SESSION["username"] = $result[0]['username'];
+							$_SESSION["username"] = $result[0]['username'];
+							$_SESSION["userid"] = $result[0]['user_id'];
+							$_SESSION["key"] = $key;
 
-						$_SESSION["username"] = $result[0]['username'];
-						$_SESSION["username"] = $result[0]['username'];
-						$_SESSION["userid"] = $result[0]['user_id'];
-						$_SESSION["key"] = $key;
-
-						header("Location: ../../index.php");
+							header("Location: ../../index.php");
+						} else {
+							exit(form_feedback("Wrong username or password."));
+						}
 					} else {
-						exit(form_feedback("Wrong username or password."));
+						exit(form_feedback("User not found."));
 					}
 				} else {
-					exit(form_feedback("User not found."));
+					exit(form_feedback("The password you entered was shorter than 8 characters."));
 				}
 			} else {
-				exit(form_feedback("The password you entered was shorter than 8 characters."));
+				exit(form_feedback("The Captcha you entered was incorrect."));
 			}
 		} else {
 			exit(form_feedback("Please enter your credentials."));
@@ -50,6 +53,16 @@
 	 */
 	function valid_password($password) {
 		if(strlen($password) >= 8) return true;
+		return false;
+	}
+	/**
+	* Checks if the Captcha matched user Captcha entry.
+	*
+	* @param string of captcha_challenge matched to captcha_text
+	* @ return boolean.
+	*/
+	function valid_captcha() {
+		if(isset($_POST['captcha_challenge']) && $_POST['captcha_challenge'] == $_SESSION['captcha_text']) return true;
 		return false;
 	}
 
