@@ -128,6 +128,24 @@
                       </div>
                     </div>
 
+					<!-- (captcha) -->
+					<div class="form-group row">
+						<label for="inputPassword" class="col-sm-2 col-form-label">Captcha</label>
+						<div class="col-sm-10">
+							<img src="/plugins/captcha.php" alt="CAPTCHA" class="captcha-image"><i class="fas fa-redo refresh-captcha"></i>
+							<br>
+							<input type="text" id="captcha" name="captcha_challenge" placeholder="Enter the Captcha" pattern="[A-Z]{6}" required>
+						</div>
+					</div>
+
+                    <!-- (submit) -->
+                    <div class="form-group row">
+                    <label class="col-sm-2"></label>
+                      <div class="offset-sm-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">Sign in</button>
+                      </div>
+                    </div>
+
                     <!-- (checkbox) -->
                     <div class="form-group row">
                       <label class="col-sm-2"></label>
@@ -137,14 +155,6 @@
                             <input name="remember" class="form-check-input" type="checkbox"> Remember me
                           </label>
                         </div>
-                      </div>
-                    </div>
-
-                    <!-- (submit) -->
-                    <div class="form-group row">
-                    <label class="col-sm-2"></label>
-                      <div class="offset-sm-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary">Sign in</button>
                       </div>
                     </div>
 
