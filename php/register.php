@@ -18,33 +18,37 @@
 		$mysql_date = $db -> quote(date('Y-m-d'));
 
 		if(valid_register_postdata()) {
-			if(!is_temp_mail(htmlspecialchars($_POST['email']))) {
-				if(passwords_match($password,$toValidatePassword)) {
-					if(valid_password(htmlspecialchars($_POST['password']))) {
-						if(!already_registered($email,$username,$db)) {
-							$hashed_password = password_hash($password, PASSWORD_BCRYPT);
-							$key = md5(uniqid(rand(), true));
+			if(valid_captcha()) {
+				if(!is_temp_mail(htmlspecialchars($_POST['email']))) {
+					if(passwords_match($password,$toValidatePassword)) {
+						if(valid_password(htmlspecialchars($_POST['password']))) {
+							if(!already_registered($email,$username,$db)) {
+								$hashed_password = password_hash($password, PASSWORD_BCRYPT);
+								$key = md5(uniqid(rand(), true));
 
-							$result = $db -> query("INSERT INTO `users` (`email`, `reg_date`, `username`, `password`, `tempkey`) VALUES (" . $email . "," .$mysql_date . "," . $username.",'".$hashed_password ."','".$key ."')"); 
-							$userid = $db -> select("SELECT `user_id` FROM `users` WHERE `email`=".$email."");
+								$result = $db -> query("INSERT INTO `users` (`email`, `reg_date`, `username`, `password`, `tempkey`) VALUES (" . $email . "," .$mysql_date . "," . $username.",'".$hashed_password ."','".$key ."')"); 
+								$userid = $db -> select("SELECT `user_id` FROM `users` WHERE `email`=".$email."");
 
-							$_SESSION["username"] = htmlspecialchars($_POST['username']);
-							$_SESSION["email"] = htmlspecialchars($_POST['email']);
-							$_SESSION["userid"] = $userid[0]['user_id'];
-							$_SESSION["key"] = $key;
+								$_SESSION["username"] = htmlspecialchars($_POST['username']);
+								$_SESSION["email"] = htmlspecialchars($_POST['email']);
+								$_SESSION["userid"] = $userid[0]['user_id'];
+								$_SESSION["key"] = $key;
 
-							header("Location: ../../index.php");
+								header("Location: ../../index.php");
+							} else {
+								exit(form_feedback("This email or username is already being used."));
+							}
 						} else {
-							exit(form_feedback("This email or username is already being used."));
+							exit(form_feedback("Password should be longer than 8 characters."));
 						}
 					} else {
-						exit(form_feedback("Password should be longer than 8 characters."));
+						exit(form_feedback("The provided passwords don't match."));
 					}
 				} else {
-					exit(form_feedback("The provided passwords don't match."));
+					exit(form_feedback("Please use a valid email address."));
 				}
 			} else {
-				exit(form_feedback("Please use a valid email address."));
+				exit(form_feedback("The Captcha you entered was incorrect."));
 			}
 		} else {
 			exit(form_feedback("Please fill out the form."));
@@ -58,6 +62,17 @@
 	 */
 	function valid_register_postdata() {
 		if(!empty($_POST['password']) && !empty($_POST['email']) && !empty($_POST['tovalidatepassword']) && !empty($_POST['username'])) return true;
+		return false;
+	}
+	
+	/**
+	* Checks if the Captcha matched user Captcha entry.
+	*
+	* @param string of captcha_challenge matched to captcha_text
+	* @ return boolean.
+	*/
+	function valid_captcha() {
+		if(isset($_POST['captcha_challenge']) && $_POST['captcha_challenge'] == $_SESSION['captcha_text']) return true;
 		return false;
 	}
 
