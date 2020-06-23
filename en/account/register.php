@@ -108,7 +108,7 @@
             <div class="col-md-8">
             <h1>Register</h1>
             <hr>
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" data-toggle="validator" id="form">
+                <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" data-toggle="validator" id="form" autocomplete="off">
                     <div id="feedback" style="display: none;" class="alert alert-danger"></div>
 
                     <!-- (username) -->
@@ -153,7 +153,7 @@
 						<div class="col-sm-10">
 							<img src="/plugins/captcha.php" alt="CAPTCHA" class="captcha-image"><i class="fas fa-redo refresh-captcha"></i>
 							<br>
-							<input type="text" id="captcha" name="captcha_challenge" placeholder="Enter the Captcha" pattern="[A-Z]{6}" required>
+							<input type="text" id="captcha" name="captcha_challenge" class="form-control" placeholder="Enter the Captcha" pattern="[A-Z]{6}" required>
 						</div>
 					</div>
 
